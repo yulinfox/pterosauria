@@ -66,9 +66,14 @@ public class ConfigDO {
 
     /**
      * 返回响应中的 contentType
-     * 默认 application/json;charset=UTF8
+     * 默认 application/json;charset=UTF-8
      */
     private String responseContentType;
+
+    /**
+     * 异步延迟时间，秒
+     */
+    private Integer delaySeconds;
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public enum TypeEnum {
