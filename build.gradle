@@ -1,0 +1,42 @@
+plugins {
+	id 'org.springframework.boot' version '2.1.6.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+}
+
+group = 'com.toroto.pterosauria'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+	maven{ url 'https://maven.aliyun.com/repository/google'}
+	maven{ url 'https://maven.aliyun.com/repository/gradle-plugin'}
+	maven{ url 'https://maven.aliyun.com/repository/public'}
+	maven{ url 'https://maven.aliyun.com/repository/jcenter'}
+	jcenter()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compile group: 'tk.mybatis', name: 'mapper-spring-boot-starter', version: '2.1.5'
+	compile group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '2.1.0'
+
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'mysql:mysql-connector-java'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+}
+
+test {
+	useJUnitPlatform()
+}
