@@ -1,5 +1,6 @@
 package com.toroto.pterosauria.handler;
 
+import com.toroto.pterosauria.domain.RequestData;
 import com.toroto.pterosauria.domain.db.ConfigDO;
 import com.toroto.pterosauria.manager.ConfigManager;
 import com.toroto.pterosauria.utils.SpringFactoryUtil;
@@ -7,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,10 +21,29 @@ public abstract class AbstractHandler {
 
     private static ConfigManager configManager;
 
+    protected RequestData requestData;
+
+    protected HttpServletRequest request;
+
     protected static Map<Integer, AbstractHandler> HANDLER_MAP = new ConcurrentHashMap<>(2);
 
-    protected ConfigDO getConfig(String uri, String method) {
-        return configManager.getConfig(uri, method);
+    protected void parseRequest(HttpServletRequest request) throws Exception {
+        this.request = request;
+        requestData = new RequestData();
+        requestData.parseBody(getBody());
+        requestData.parseQuery(request.getQueryString());
+        requestData.setMethod(request.getMethod());
+        requestData.setUri(request.getRequestURI());
+    }
+
+    private String getBody() throws Exception {
+        BufferedReader br = request.getReader();
+        String str;
+        StringBuilder body = new StringBuilder();
+        while((str = br.readLine()) != null){
+            body.append(str);
+        }
+        return body.toString();
     }
 
     /**

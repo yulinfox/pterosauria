@@ -1,10 +1,8 @@
 package com.toroto.pterosauria;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.Test;
 
-@SpringBootTest
-class PterosauriaApplicationTests {
+public class PterosauriaApplicationTests {
 
 	@Test
 	void contextLoads() {

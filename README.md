@@ -19,3 +19,15 @@ java -jar package-name.jar
 - 建表语句在sql文件夹下，里面包含两条测试数据
 - 当前只实现了异步的get&post请求，其他的有兴趣可以自己补充，在AsyncHandler中
 - 配置见application.properties
+
+## postman 测试
+```json
+{
+	"testText": "text",
+	"helloWorld": "hello world",
+	"testObj": {
+		"objText": "otext",
+		"objInt": 1
+	}
+}
+```

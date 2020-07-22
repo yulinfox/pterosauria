@@ -22,8 +22,9 @@ public class SyncHandler extends AbstractHandler {
 
     @Override
     public void doReturn(HttpServletRequest request, HttpServletResponse response, ConfigDO config) throws Exception {
+        super.parseRequest(request);
         response.setContentType(config.getResponseContentType());
-        response.getWriter().write(config.getSyncResponse());
+        response.getWriter().write(this.requestData.getResponse(config.getSyncResponse()));
         log.info("同步响应已返回：{}", config.getSyncResponse());
     }
 }

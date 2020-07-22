@@ -51,8 +51,9 @@ public class AsyncHandler extends AbstractHandler {
 
     @Override
     public void doReturn(HttpServletRequest request, HttpServletResponse response, ConfigDO config) throws Exception {
+        super.parseRequest(request);
         response.setContentType(config.getResponseContentType());
-        response.getWriter().write(config.getSyncResponse());
+        response.getWriter().write(this.requestData.getResponse(config.getSyncResponse()));
         log.info("同步响应已返回：{}", config.getSyncResponse());
         doAsyncCall(config);
     }
@@ -71,7 +72,7 @@ public class AsyncHandler extends AbstractHandler {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, config.getAsyncContentType());
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON_UTF8));
-        HttpEntity entity = new HttpEntity<>(config.getAsyncResponse(), headers);
+        HttpEntity entity = new HttpEntity<>(this.requestData.getResponse(config.getAsyncResponse()), headers);
         Object response = restTemplate.postForObject(config.getAsyncCallPath(), entity, Object.class);
         log.info("POST: {}", response);
     }
