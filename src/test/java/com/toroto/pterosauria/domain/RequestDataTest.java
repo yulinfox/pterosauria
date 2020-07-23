@@ -27,6 +27,14 @@ public class RequestDataTest {
                 "\t\"bodyQueryText\": {{body:queryTest1}},\n" +
                 "\t\"testObj\": {{testObj}}\n" +
                 "}";
-        System.out.printf(requestData.getResponse(template));
+
+        String result = "{\n" +
+                "\t\"queryTest1\": \"test1\",\n" +
+                "\t\"queryTest2\": \"test2\",\n" +
+                "\t\"testText\": \"text\",\n" +
+                "\t\"bodyQueryText\": \"bodyTest1\",\n" +
+                "\t\"testObj\": \"{objText=otext, objInt=1}\"\n" +
+                "}";
+        assert result.equals(requestData.getResponse(template));
     }
 }

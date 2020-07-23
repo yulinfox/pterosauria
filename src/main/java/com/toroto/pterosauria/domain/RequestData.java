@@ -103,12 +103,22 @@ public class RequestData {
                 String place = placeHolderArray[0].toUpperCase();
                 String holder = placeHolderArray[1];
                 if (QUERY.equalsIgnoreCase(place)) {
-                    replaceMap.put(placeHolder, query.get(holder).toString());
+                    replaceMap.put(placeHolder, getString(placeHolder, query.get(holder)));
                 } else if (BODY.equalsIgnoreCase(place)) {
-                    replaceMap.put(placeHolder, body.get(holder).toString());
+                    replaceMap.put(placeHolder, getString(placeHolder, body.get(holder).toString()));
                 }
             }
         }
+        return doReplace(replaceMap, template);
+    }
+
+    /**
+     * 替换模板字符串
+     * @param replaceMap
+     * @param template
+     * @return
+     */
+    private String doReplace(Map<String, String> replaceMap, String template) {
         String result = template;
         for (Map.Entry<String, String> entry : replaceMap.entrySet()) {
             StringBuilder placeHolder = new StringBuilder();
@@ -118,6 +128,10 @@ public class RequestData {
             result = result.replace(placeHolder.toString(), data.toString());
         }
         return result;
+    }
+
+    private String getString(String placeHolder, Object data) {
+        return null == data ? placeHolder : data.toString();
     }
 
 }
