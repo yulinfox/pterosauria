@@ -1,6 +1,7 @@
 package com.toroto.pterosauria.handler;
 
 import com.toroto.pterosauria.domain.db.ConfigDO;
+import com.toroto.pterosauria.parser.processor.ParseProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +25,7 @@ public class SyncHandler extends AbstractHandler {
     public void doReturn(HttpServletRequest request, HttpServletResponse response, ConfigDO config) throws Exception {
         super.parseRequest(request);
         response.setContentType(config.getResponseContentType());
-        response.getWriter().write(this.requestData.getResponse(config.getSyncResponse()));
+        response.getWriter().write(ParseProcessor.parse(config.getSyncResponse(), this.requestData));
         log.info("同步响应已返回：{}", config.getSyncResponse());
     }
 }

@@ -1,6 +1,7 @@
 package com.toroto.pterosauria.handler;
 
 import com.toroto.pterosauria.domain.db.ConfigDO;
+import com.toroto.pterosauria.parser.processor.ParseProcessor;
 import com.toroto.pterosauria.task.AsyncCallTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,7 @@ public class AsyncHandler extends AbstractHandler {
     public void doReturn(HttpServletRequest request, HttpServletResponse response, ConfigDO config) throws Exception {
         super.parseRequest(request);
         response.setContentType(config.getResponseContentType());
-        response.getWriter().write(this.requestData.getResponse(config.getSyncResponse()));
+        response.getWriter().write(ParseProcessor.parse(config.getSyncResponse(), this.requestData));
         log.info("同步响应已返回：{}", config.getSyncResponse());
         doAsyncCall(config);
     }
@@ -72,7 +73,7 @@ public class AsyncHandler extends AbstractHandler {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, config.getAsyncContentType());
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON_UTF8));
-        HttpEntity entity = new HttpEntity<>(this.requestData.getResponse(config.getAsyncResponse()), headers);
+        HttpEntity entity = new HttpEntity<>(ParseProcessor.parse(config.getAsyncResponse(), this.requestData), headers);
         Object response = restTemplate.postForObject(config.getAsyncCallPath(), entity, Object.class);
         log.info("POST: {}", response);
     }
