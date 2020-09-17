@@ -62,7 +62,7 @@ public class ConfigDO {
     /**
      * 异步接口contentType
      */
-    private String asyncContentType;
+    private String asyncHttpHeader;
 
     /**
      * 返回响应中的 contentType

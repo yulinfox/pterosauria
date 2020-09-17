@@ -3,6 +3,7 @@ package com.toroto.pterosauria.handler;
 import com.toroto.pterosauria.domain.db.ConfigDO;
 import com.toroto.pterosauria.parser.processor.ParseProcessor;
 import com.toroto.pterosauria.task.AsyncCallTask;
+import com.toroto.pterosauria.utils.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,7 +73,12 @@ public class AsyncHandler extends AbstractHandler {
 
     public void doPostCall(ConfigDO config) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, config.getAsyncContentType());
+        if (!StringUtils.isEmpty(config.getAsyncHttpHeader())) {
+            Map<String, String> headerMap = JsonUtil.fromJson(config.getAsyncHttpHeader(), Map.class);
+            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+                headers.add(entry.getKey(), entry.getValue());
+            }
+        }
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON_UTF8));
         HttpEntity entity = new HttpEntity<>(ParseProcessor.parse(config.getAsyncResponse(), this.requestData), headers);
         Object response = restTemplate.postForObject(config.getAsyncCallPath(), entity, Object.class);
