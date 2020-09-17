@@ -6,10 +6,7 @@ import com.toroto.pterosauria.task.AsyncCallTask;
 import com.toroto.pterosauria.utils.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -72,6 +69,14 @@ public class AsyncHandler extends AbstractHandler {
     }
 
     public void doPostCall(ConfigDO config) {
+        HttpHeaders headers = getHttpHeaders(config);
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON_UTF8));
+        HttpEntity entity = new HttpEntity<>(ParseProcessor.parse(config.getAsyncResponse(), this.requestData), headers);
+        Object response = restTemplate.postForObject(config.getAsyncCallPath(), entity, Object.class);
+        log.info("POST: {}", response);
+    }
+
+    private HttpHeaders getHttpHeaders(ConfigDO config) {
         HttpHeaders headers = new HttpHeaders();
         if (!StringUtils.isEmpty(config.getAsyncHttpHeader())) {
             Map<String, String> headerMap = JsonUtil.fromJson(config.getAsyncHttpHeader(), Map.class);
@@ -79,14 +84,20 @@ public class AsyncHandler extends AbstractHandler {
                 headers.add(entry.getKey(), entry.getValue());
             }
         }
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON_UTF8));
-        HttpEntity entity = new HttpEntity<>(ParseProcessor.parse(config.getAsyncResponse(), this.requestData), headers);
-        Object response = restTemplate.postForObject(config.getAsyncCallPath(), entity, Object.class);
-        log.info("POST: {}", response);
+        return headers;
     }
 
     public void doGetCall(ConfigDO config) {
-        Object response = restTemplate.getForObject(config.getAsyncCallPath(), Object.class);
+        // create headers
+        HttpHeaders headers = getHttpHeaders(config);
+        HttpEntity request = new HttpEntity(headers);
+        // make an HTTP GET request with headers
+        ResponseEntity<String> response = restTemplate.exchange(
+                config.getAsyncCallPath(),
+                HttpMethod.GET,
+                request,
+                String.class
+        );
         log.info("GET: {}", response);
     }
 }
