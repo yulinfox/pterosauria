@@ -1,6 +1,7 @@
 package com.toroto.pterosauria.parser;
 
 import com.toroto.pterosauria.domain.RequestData;
+import com.toroto.pterosauria.parser.processor.ParseProcessor;
 import org.springframework.stereotype.Component;
 
 /**
@@ -9,6 +10,10 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class DefaultParser extends AbstractParser {
+
+    public DefaultParser() {
+        ParseProcessor.setDefaultParser(this);
+    }
 
     @Override
     public String parse(String placeHolder, RequestData data) {

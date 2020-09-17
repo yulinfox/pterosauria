@@ -1,11 +1,21 @@
-package com.toroto.pterosauria.domain;
+package com.toroto.pterosauria.parser.processor;
 
+import com.toroto.pterosauria.domain.RequestData;
+import com.toroto.pterosauria.parser.DefaultParser;
+import com.toroto.pterosauria.parser.RandomNumberParser;
+import com.toroto.pterosauria.parser.UUIDParser;
 import org.junit.Test;
 
-public class RequestDataTest {
+import static org.junit.Assert.*;
+
+public class ParseProcessorTest {
 
     @Test
-    public void getResponse() {
+    public void parse() {
+        // init ParseProcessor
+        RandomNumberParser parser = new RandomNumberParser();
+        UUIDParser uuidParser = new UUIDParser();
+        DefaultParser defaultParser = new DefaultParser();
 
         String body = "{\n" +
                 "\t\"testText\": \"text\",\n" +
@@ -35,6 +45,7 @@ public class RequestDataTest {
                 "\t\"bodyQueryText\": \"bodyTest1\",\n" +
                 "\t\"testObj\": \"{objText=otext, objInt=1}\"\n" +
                 "}";
-        assert result.equals(requestData.getResponse(template));
+        assert result.equals(ParseProcessor.parse(template, requestData));
+
     }
 }

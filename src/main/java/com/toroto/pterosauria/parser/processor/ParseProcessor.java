@@ -4,7 +4,6 @@ import com.toroto.pterosauria.domain.RequestData;
 import com.toroto.pterosauria.parser.AbstractParser;
 import com.toroto.pterosauria.parser.DefaultParser;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,8 +36,7 @@ public class ParseProcessor {
         return getResponse(template, data);
     }
 
-    @Autowired
-    public void setDefaultParser(DefaultParser defaultParser) {
+    public static void setDefaultParser(DefaultParser defaultParser) {
         DEFAULT_PARSER = defaultParser;
     }
 
