@@ -21,13 +21,19 @@ java -jar package-name.jar
 - 配置见application.properties
 
 ## postman 测试
+```
+请求路径：http://localhost:9099/test?test=ttt&test1=ttt2
+```
 ```json
 {
 	"testText": "text",
 	"helloWorld": "hello world",
 	"testObj": {
 		"objText": "otext",
-		"objInt": 1
+		"objInt": 1,
+		"objObj": {
+			"innerData": "inner"
+		}
 	}
 }
 ```
