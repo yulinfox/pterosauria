@@ -2,9 +2,12 @@ package com.toroto.pterosauria.handler;
 
 import com.toroto.pterosauria.domain.RequestData;
 import com.toroto.pterosauria.domain.db.ConfigDO;
+import com.toroto.pterosauria.loader.AbstractConfigLoader;
 import com.toroto.pterosauria.manager.ConfigManager;
 import com.toroto.pterosauria.utils.SpringFactoryUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,15 +20,21 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2020/7/15
  */
 @Slf4j
+@Component
 public abstract class AbstractHandler {
 
-    private static ConfigManager configManager;
+    private static AbstractConfigLoader CONFIG_LOADER;
 
     protected RequestData requestData;
 
     protected HttpServletRequest request;
 
     protected static Map<Integer, AbstractHandler> HANDLER_MAP = new ConcurrentHashMap<>(2);
+
+    @Autowired
+    public void setConfigLoader(AbstractConfigLoader configLoader) {
+        CONFIG_LOADER = configLoader;
+    }
 
     protected void parseRequest(HttpServletRequest request) throws Exception {
         this.request = request;
@@ -56,12 +65,9 @@ public abstract class AbstractHandler {
     abstract public void doReturn(HttpServletRequest request, HttpServletResponse response, ConfigDO config) throws Exception;
 
     public static void process(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (null == configManager) {
-            configManager = SpringFactoryUtil.getBean(ConfigManager.class);
-        }
         String uri = request.getRequestURI();
         String method = request.getMethod();
-        ConfigDO config = configManager.getConfig(uri, method);
+        ConfigDO config = CONFIG_LOADER.load(uri, method);
         if (null == config) {
             log.warn("没有对应配置，请检查：uri = {}, method = {}", uri, method);
             return;
