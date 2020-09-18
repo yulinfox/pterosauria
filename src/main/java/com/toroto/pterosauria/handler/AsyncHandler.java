@@ -1,6 +1,7 @@
 package com.toroto.pterosauria.handler;
 
 import com.toroto.pterosauria.domain.db.ConfigDO;
+import com.toroto.pterosauria.domain.delay.DelayedElement;
 import com.toroto.pterosauria.parser.processor.ParseProcessor;
 import com.toroto.pterosauria.task.AsyncCallTask;
 import com.toroto.pterosauria.utils.JsonUtil;
@@ -17,10 +18,8 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.DelayQueue;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 处理异步请求
@@ -29,14 +28,19 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Component
-public class AsyncHandler extends AbstractHandler {
+public class AsyncHandler extends AbstractHandler implements Runnable {
+
+    private static final DelayQueue<DelayedElement> ASYNC_DELAY_QUEUE = new DelayQueue<>();
+
+    private static final int THOUSAND = 1000;
 
     @Autowired
     private RestTemplate restTemplate;
 
     private Map<String, Method> methodMap = new HashMap<>(2);
 
-    private ExecutorService executor = new ThreadPoolExecutor(3, 10, 0L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+    @Autowired
+    private ExecutorService executor;
 
     public AsyncHandler() {
         HANDLER_MAP.put(ConfigDO.TypeEnum.ASYNC.getCode(), this);
@@ -47,6 +51,7 @@ public class AsyncHandler extends AbstractHandler {
             log.error("获取方法失败:{}", e);
             System.exit(1);
         }
+        new Thread(this).start();
     }
 
     @Override
@@ -65,7 +70,7 @@ public class AsyncHandler extends AbstractHandler {
             return;
         }
         AsyncCallTask task = new AsyncCallTask(this, method, config);
-        executor.execute(task);
+        ASYNC_DELAY_QUEUE.offer(new DelayedElement(task, config.getDelaySeconds() * THOUSAND));
     }
 
     public void doPostCall(ConfigDO config) {
@@ -99,5 +104,19 @@ public class AsyncHandler extends AbstractHandler {
                 String.class
         );
         log.info("GET: {}", response);
+    }
+
+    @Override
+    public void run() {
+        AsyncCallTask task;
+        while (true) {
+            try {
+                task = (AsyncCallTask) ASYNC_DELAY_QUEUE.take().getObj();
+                log.info("开始执行异步调用");
+                executor.execute(task);
+            } catch (InterruptedException e) {
+                log.info("异步调用处理失败： ", e);
+            }
+        }
     }
 }

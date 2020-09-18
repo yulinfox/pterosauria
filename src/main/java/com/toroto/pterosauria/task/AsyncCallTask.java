@@ -12,8 +12,6 @@ import java.lang.reflect.Method;
 @Slf4j
 public class AsyncCallTask implements Runnable {
 
-    private static final int THOUSAND = 1000;
-
     private ConfigDO config;
 
     private Method method;
@@ -29,8 +27,6 @@ public class AsyncCallTask implements Runnable {
     @Override
     public void run() {
         try {
-            log.info("进入异步处理线程");
-            Thread.sleep(config.getDelaySeconds() * THOUSAND);
             log.info("开始处理异步调用");
             method.invoke(object, config);
         } catch (Exception e) {
