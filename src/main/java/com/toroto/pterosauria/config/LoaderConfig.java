@@ -22,7 +22,6 @@ public class LoaderConfig {
         return new DbConfigLoader();
     }
 
-    @ConditionalOnExpression("#{'file'.equals(environment['config.loader'])}")
     @Bean
     public AbstractConfigLoader fileConfigLoader() {
         return new FileConfigLoader();
