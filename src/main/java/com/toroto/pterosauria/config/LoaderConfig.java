@@ -6,6 +6,7 @@ import com.toroto.pterosauria.loader.FileConfigLoader;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 /**
  * @author yuinfu
@@ -16,6 +17,7 @@ public class LoaderConfig {
 
     @ConditionalOnExpression("#{'db'.equals(environment['config.loader'])}")
     @Bean
+    @Primary
     public AbstractConfigLoader dbConfigLoader() {
         return new DbConfigLoader();
     }

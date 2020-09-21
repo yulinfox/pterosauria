@@ -1,0 +1,4 @@
+{
+  "/test-POST": "config/testPost.conf",
+  "/test-GET": "config/testGet.conf"
+}
