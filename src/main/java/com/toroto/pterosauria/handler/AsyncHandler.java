@@ -11,6 +11,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -96,9 +97,17 @@ public class AsyncHandler extends AbstractHandler implements Runnable {
         // create headers
         HttpHeaders headers = getHttpHeaders(config);
         HttpEntity request = new HttpEntity(headers);
+        String requestParam = ParseProcessor.parse(config.getAsyncResponse(), this.requestData);
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(config.getAsyncCallPath());
+        if (!StringUtils.isEmpty(requestParam)) {
+            Map<String, Object> paramMap = JsonUtil.fromJson(requestParam, Map.class);
+            paramMap.entrySet()
+                    .forEach(p -> uriBuilder.queryParam(p.getKey(), p.getValue()));
+        }
+
         // make an HTTP GET request with headers
         ResponseEntity<String> response = restTemplate.exchange(
-                config.getAsyncCallPath(),
+                uriBuilder.build().encode().toString(),
                 HttpMethod.GET,
                 request,
                 String.class
