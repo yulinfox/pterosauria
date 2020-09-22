@@ -136,12 +136,16 @@ public class ParseProcessor {
         // 处理占位符
         // 类似 {{body:helloWorld}} 会被解析成 body helloWorld
         // 用于从body中的helloWorld字段中取值并返回
+        // 模拟只能存储一个元素的栈
+        boolean haveBefore = false;
         for (int i = 1; i < chars.length; i ++) {
             if (chars[i] == '{' && chars[i - 1] == '{') {
                 posList.add(i);
+                haveBefore = true;
             }
-            if (chars[i] == '}' && chars[i - 1] == '}') {
+            if (chars[i] == '}' && chars[i - 1] == '}' && haveBefore) {
                 posList.add(i - 1);
+                haveBefore = false;
             }
         }
         List<String> placeHolders = new ArrayList<>(8);
