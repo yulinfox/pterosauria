@@ -5,6 +5,8 @@ import com.toroto.pterosauria.parser.AbstractParser;
 import com.toroto.pterosauria.parser.DefaultParser;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -122,7 +124,12 @@ public class ParseProcessor {
         if (log.isDebugEnabled() && null == result) {
             log.debug("result not found: {}", placeHolderArray.toString());
         }
-        return result == null ? "" : result.toString();
+        result = result == null ? "" : result.toString();
+        try {
+            return URLDecoder.decode(result.toString(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return result.toString();
+        }
     }
 
     /**
@@ -168,15 +175,9 @@ public class ParseProcessor {
         for (Map.Entry<String, String> entry : replaceMap.entrySet()) {
             StringBuilder placeHolder = new StringBuilder();
             placeHolder.append(PREFIX).append(PREFIX).append(entry.getKey()).append(SUFFIX).append(SUFFIX);
-            StringBuilder data = new StringBuilder();
-            data.append("\"").append(entry.getValue()).append("\"");
-            result = result.replace(placeHolder.toString(), data.toString());
+            result = result.replace(placeHolder.toString(), entry.getValue());
         }
         return result;
-    }
-
-    private static final String getString(String placeHolder, Object data) {
-        return null == data ? placeHolder : data.toString();
     }
 
 }
