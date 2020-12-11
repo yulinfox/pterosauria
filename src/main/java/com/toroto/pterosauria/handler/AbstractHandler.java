@@ -67,10 +67,13 @@ public abstract class AbstractHandler {
     public static void process(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String uri = request.getRequestURI();
         String method = request.getMethod();
-        ConfigDO config = CONFIG_LOADER.load(uri, method);
+        ConfigDO config = CONFIG_LOADER.load(uri, method.toUpperCase());
         if (null == config) {
-            log.warn("没有对应配置，请检查：uri = {}, method = {}", uri, method);
-            return;
+            config = CONFIG_LOADER.load(uri, method.toLowerCase());
+            if (null == config) {
+                log.warn("没有对应配置，请检查：uri = {}, method = {}", uri, method);
+                return;
+            }
         }
         AbstractHandler handler = HANDLER_MAP.get(config.getType());
         if (null == handler) {
