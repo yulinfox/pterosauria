@@ -1,7 +1,6 @@
 package com.toroto.pterosauria.parser;
 
 import com.toroto.pterosauria.domain.RequestData;
-import com.toroto.pterosauria.parser.processor.ParseProcessor;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -14,11 +13,11 @@ import java.util.UUID;
 public class UUIDParser extends AbstractParser {
 
     public UUIDParser() {
-        ParseProcessor.register("UUID", this);
+        register("UUID", this);
     }
 
     @Override
-    public String parse(String placeHolder, RequestData data) {
+    public String doParse(String placeHolder, RequestData data) {
         return UUID.randomUUID().toString();
     }
 }
