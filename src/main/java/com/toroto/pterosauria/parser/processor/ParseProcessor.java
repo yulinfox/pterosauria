@@ -2,7 +2,6 @@ package com.toroto.pterosauria.parser.processor;
 
 import com.toroto.pterosauria.domain.RequestData;
 import com.toroto.pterosauria.parser.AbstractParser;
-import com.toroto.pterosauria.parser.DefaultParser;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.UnsupportedEncodingException;
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author yuinfu
@@ -20,26 +18,14 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class ParseProcessor {
 
-    private static final Map<String, AbstractParser> PARSER_MAP = new ConcurrentHashMap<>(4);
-
-    private static AbstractParser DEFAULT_PARSER;
-
     public static final char PREFIX = '{';
     public static final char SUFFIX = '}';
 
     private static final String QUERY = "QUERY";
     private static final String BODY = "BODY";
 
-    public static final void register(String placeHolder, AbstractParser parser) {
-        PARSER_MAP.put(placeHolder, parser);
-    }
-
     public static String parse(String template, RequestData data) {
         return getResponse(template, data);
-    }
-
-    public static void setDefaultParser(DefaultParser defaultParser) {
-        DEFAULT_PARSER = defaultParser;
     }
 
     /**
@@ -67,13 +53,7 @@ public class ParseProcessor {
         for (String placeHolder : placeHolders) {
             String[] placeHolderArray = placeHolder.split(":");
             if (placeHolderArray.length == 1) {
-                AbstractParser parser = PARSER_MAP.get(placeHolder.toUpperCase());
-                if (null == parser) {
-                    parser = DEFAULT_PARSER;
-                    PARSER_MAP.put(placeHolder, parser);
-                }
-                String result = parser.parse(placeHolder, data);
-                replaceMap.put(placeHolder, result);
+                replaceMap.put(placeHolder, AbstractParser.parse(placeHolder, data));
             } else {
                 String place = placeHolderArray[0].toUpperCase();
                 if (QUERY.equalsIgnoreCase(place)) {
