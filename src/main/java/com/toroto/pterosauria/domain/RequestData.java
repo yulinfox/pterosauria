@@ -14,6 +14,11 @@ import java.util.*;
 public class RequestData {
 
     /**
+     * 认为body是字符串
+     */
+    public static final String STRING_BODY = "PTEROSAURIA_STRING_BODY";
+
+    /**
      * 路径url参数
      */
     private Map<String, Object> query;
@@ -56,6 +61,10 @@ public class RequestData {
         if (StringUtils.isEmpty(bodyString)) {
             return;
         }
-        body = JsonUtil.fromJson(bodyString, HashMap.class);
+        try {
+            body = JsonUtil.fromJson(bodyString, HashMap.class);
+        } catch (Exception e) {
+            body.put(STRING_BODY, bodyString);
+        }
     }
 }

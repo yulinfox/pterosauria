@@ -3,6 +3,7 @@ package com.toroto.pterosauria.parser.processor;
 import com.toroto.pterosauria.domain.RequestData;
 import com.toroto.pterosauria.parser.AbstractParser;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -36,6 +37,9 @@ public class ParseProcessor {
      */
     protected static String getResponse(final String template, RequestData data) {
         List<String> placeHolders = processPlaceHolder(template);
+        if (CollectionUtils.isEmpty(placeHolders)) {
+            return template;
+        }
         // 占位符取值替换
         Map<String, String> replaceMap = getReplaceMap(data, placeHolders);
         return doReplace(replaceMap, template);
