@@ -59,8 +59,9 @@ public class AsyncHandler extends AbstractHandler implements Runnable {
     public void doReturn(HttpServletRequest request, HttpServletResponse response, ConfigDO config) throws Exception {
         super.parseRequest(request);
         response.setContentType(config.getResponseContentType());
-        response.getWriter().write(ParseProcessor.parse(config.getSyncResponse(), this.requestData));
-        log.info("同步响应已返回：{}", config.getSyncResponse());
+        String syncRes = ParseProcessor.parse(config.getSyncResponse(), this.requestData);
+        response.getWriter().write(syncRes);
+        log.info("同步响应已返回：{}", syncRes);
         doAsyncCall(config);
     }
 
