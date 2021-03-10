@@ -1,8 +1,11 @@
 package com.toroto.pterosauria.domain.db;
 
+import com.toroto.pterosauria.utils.JsonUtil;
 import lombok.*;
+import org.hsqldb.lib.StringUtil;
 
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * @author yulinfu
@@ -43,11 +46,38 @@ public class ConfigDO {
      */
     private String syncResponse;
 
+    public String getSyncResponse() {
+        if (StringUtil.isEmpty(syncResponse) && null != syncResponseObj) {
+            syncResponse = JsonUtil.toJson(syncResponseObj);
+        }
+        return syncResponse;
+    }
+
+    /**
+     * 同步返回实体类
+     * 使用JsonUtil.toJson后值与字段syncResponse相同
+     */
+    @Transient
+    private Object syncResponseObj;
+
     /**
      * 异步响应
      * type为1（异步）的时候不为空
      */
     private String asyncResponse;
+
+    public String getAsyncResponse() {
+        if (StringUtil.isEmpty(asyncResponse) && null != asyncResponseObj) {
+            asyncResponse = JsonUtil.toJson(asyncResponseObj);
+        }
+        return asyncResponse;
+    }
+
+    /**
+     * 异步返回实体类
+     * 使用JsonUtil.toJson后值与字段asyncResponse相同
+     */
+    private String asyncResponseObj;
 
     /**
      * 异步调用路径
