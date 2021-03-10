@@ -6,6 +6,7 @@ import org.hsqldb.lib.StringUtil;
 
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Map;
 
 /**
  * @author yulinfu
@@ -77,7 +78,7 @@ public class ConfigDO {
      * 异步返回实体类
      * 使用JsonUtil.toJson后值与字段asyncResponse相同
      */
-    private String asyncResponseObj;
+    private Object asyncResponseObj;
 
     /**
      * 异步调用路径
@@ -93,6 +94,19 @@ public class ConfigDO {
      * 异步接口contentType
      */
     private String asyncHttpHeader;
+
+    public String getAsyncHttpHeader() {
+        if (StringUtil.isEmpty(asyncHttpHeader) && null != asyncHttpHeaderMap) {
+            asyncHttpHeader = JsonUtil.toJson(asyncHttpHeaderMap);
+        }
+        return asyncHttpHeader;
+    }
+
+    /**
+     * 异步接口contentType
+     */
+    @Transient
+    private Map<String, Object> asyncHttpHeaderMap;
 
     /**
      * 返回响应中的 contentType
